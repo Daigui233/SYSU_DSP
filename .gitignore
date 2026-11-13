@@ -1,0 +1,50 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+~$*
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Temporary files, caches and intermediate outputs
+tmp/
+temp/
+.cache/
+build/
+__pycache__/
+*.pyc
+*.tmp
+*.temp
+*.bak
+*.log
+
+# MATLAB autosave and local workspace
+*.asv
+*.m~
+matlab.mat
+slprj/
+*.slxc
+
+# Vivado generated files (keep source, Tcl, XDC and IP configuration)
+.Xil/
+*.cache/
+*.gen/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.jou
+*.str
+*.wdb
+*.vcd
+*.vvp
+*.dcp
+*.bit
+*.bin
+xsim.dir/
+.ipcache/
+
+# Final data and figures in each module's results/ remain trackable.
