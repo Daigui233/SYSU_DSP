@@ -1,30 +1,56 @@
-# 基础模块
+﻿# 基础模块
 
-当前阶段：递归与迭代 FFT 的 8 点底层验证。暂不增加 16/32/64/128 点专用封装、运行时参数校验和性能优化。
+## For Human
 
-初始化按最大点数执行一次，每层保存旋转因子及该点数的倒位序排列。初始化到 8 点时只有 W2、W4、W8 三行；初始化到 128 点时，较小点数也可复用。各层用 `cos(θ)-j·sin(θ)` 直接计算第四象限，将内部点倒序并取反实部（虚部不变）补齐第三象限。
+已完成 32/64/128 点 FFT、IFFT 独立封装，以及直接线性卷积、短序列快速卷积、重叠相加（OLA）、重叠保留（OLS）。支持实数和复数，统一输出列向量；尚未进行性能评测或接入自适应 CMA。
 
-`plan.stage_points(stage)` 标明点数，`plan.stage_weights{stage}` 保存该层系数，`plan.input_orders{stage}` 保存对应倒位序。FFT 根据输入长度选择：8 点输入取第 3 行排列、执行前 3 层，不使用更高层。各行使用 cell 保存不同长度的向量，不补零。
+在仓库根目录调用，`x32` 为 32 点向量；`x`、`h` 为非空输入及卷积核：
 
-| 文件 | 职责 |
-| --- | --- |
-| `src/fft_plan.m` | 初始化到最大点数，每层分别保存系数和对应点数的倒位序 |
-| `src/fft_butterfly.m` | 共用的两路蝶形计算 |
-| `src/fft_recursive.m` | 连续二分递归、返回时蝶形合并 |
-| `src/fft_iterative.m` | 按层、按组完成相同蝶形计算 |
-| `tests/test_fft8.m` | 手写 DFT 对照、底层检查与逆变换复用验证 |
+```matlab
+addpath('basic/src');
+plan = fft_plan(128);       % 初始化一次，各模块共用
+X = fft32(x32, plan);       % 另有 fft64、fft128
+restored = ifft32(X, plan); % 另有 ifft64、ifft128
 
-使用约定：输入长度为不超过 `plan.max_points` 的 2 的幂（至少为 2），输出统一为列向量。输入只在入口倒位序一次；FFT 不缩放。IFFT 后续共用相同核心，采用共轭旋转因子并在最终输出除以实际点数。
+y_linear = conv_linear(x, h);
+y_fft = conv_fft(x, h, plan, 64); % 要求 length(x)+length(h)-1 <= 64
+y_ola = conv_ola(x, h, plan, 64); % 要求 length(h) <= 64，输入可更长
+y_ols = conv_ols(x, h, plan, 64);
+```
 
-例如先执行 `plan = fft_plan(128)`，再将同一配置传给 `fft_recursive(x, plan)` 或 `fft_iterative(x, plan)`；输入 `x` 为 8 点时，两种方法自动选择 8 点所需的排列和系数。
+固定点数封装不自动补零或截断。卷积模块负责补零，返回完整的 `length(x)+length(h)-1` 点结果，保留复数值；固定核频谱在每次 OLA/OLS 调用内复用。
 
-在 MATLAB 中切换至仓库根目录，运行：
+运行全部测试：
 
 ```matlab
 addpath('basic/tests');
 test_fft8;
+test_fft_sizes;
+test_ifft_sizes;
+test_convolution;
 ```
 
-测试采用固定输入，误差阈值为 `1e-12`。初始化配置保存为 `results/fft8_plan.mat`，重新载入后用于两种 FFT；全部通过后将最终误差数据写入 `results/fft8_errors.csv`。当前不测量用时，待正确性跑通并扩展点数后再比较性能。
+MATLAB R2025a Update 1 验证结果如下，阈值为 `1e-12`：
 
-已在 MATLAB R2025a Update 1 验证通过：6 组输入中，两种实现的结果完全一致；与手写 DFT 的最大绝对误差为 `2.54e-14`，逆变换往返最大误差为 `4.97e-16`，8 点配置的各层旋转因子最大误差为 `1.57e-16`。使用 128 点共享配置计算同样的 8 点输入也通过验证，结果列在 CSV 最后两列。本阶段仅验证 8 点变换，不代表其他点数的变换已验证。
+| 验证范围 | 数量 | 最大误差 |
+| --- | --- | --- |
+| 8 点 FFT | 6 组输入 | DFT 绝对误差 `2.54e-14` |
+| 32/64/128 点 FFT | 18 组输入 | DFT 归一化误差 `1.37e-13` |
+| 32/64/128 点 IFFT | 18 组输入 | IDFT 归一化误差 `5.67e-15` |
+| 四种卷积方法 | 156 项检查 | 归一化误差 `6.06e-16` |
+
+测试覆盖行列输入、正逆往返、复数 FFT 的实虚部分解，以及卷积的首尾边界、整块/末块不足、单点核、核长等于 FFT 长度和两路 CMA 数据片段。卷积核固定；CMA 自适应更新尚未验证。
+
+最终数据：[8 点 FFT](results/fft8_errors.csv)、[FFT 封装](results/fft_sizes_errors.csv)、[IFFT 封装](results/ifft_sizes_errors.csv)、[卷积](results/convolution_errors.csv)。复用配置：`results/fft8_plan.mat`、`results/fft128_plan.mat`。
+
+## For Agent
+
+- 遵循根目录 README；各级 README 保持 `For Human`、`For Agent` 两部分，内容简洁。
+- 保持分层：`fft_plan` 初始化，`fft_butterfly` 共用蝶形，`fft_iterative` / `fft_recursive` 为核心；`ifft_iterative` 用 `conj(FFT(conj(X)))/N` 复用迭代 FFT。固定点数入口只负责形状约定，不重复实现算法。
+- `plan` 按最大点数初始化一次，按层保存 `stage_points`、`stage_weights`、`input_orders`；只计算第四象限，用对称性补齐。实际输入决定使用的层数和排列，计算时不重新生成配置。
+- 通用 FFT/IFFT 输入长度为配置支持的 2 的幂且至少为 2；IFFT 仅归一化一次。卷积的 `fft_points` 同样需受配置支持；短卷积要求 N≥Lx+M−1，OLA/OLS 要求 N≥M，并以 B=N−M+1 分块。
+- `conv_linear` 按反折、移位、相乘求和计算，不取共轭；`conv_fft` 补零后频域相乘。OLA 累加重叠输出，OLS 丢弃前 M−1 点并拼接有效输出，末尾补零输出完整卷积尾部。
+- 参考 CMA 输入为复数，抽头也可为复数；不要取实部或误用共轭转置。当前卷积模块采用固定核，接入 CMA 时须按抽头更新时机重算频谱并保持原更新节奏。
+- 代码和具体操作均需注释，避免重复变量与重复实现；新增参数校验先与用户讨论，不额外添加保护逻辑。
+- 禁用内置 `fft/ifft/conv`。测试用直接 DFT、正指数 IDFT 和移位累加基准独立验证；除 8 点绝对误差外，按 `最大绝对误差 / max(1, 基准最大幅度)` 判定，往返以原输入作基准。
+- 修改后运行相关测试；`results/` 只保留最终数据和复用配置，临时日志和缓存不纳入提交。

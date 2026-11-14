@@ -74,7 +74,7 @@ function test_fft8
     for case_index = 1:numel(case_names)
         signal = signals(:, case_index);
         % 独立 DFT 作正确性基准，不能只靠两种 FFT 相等来判断正确。
-        reference = direct_dft(signal);
+        reference = dft_reference(signal);
         recursive = fft_recursive(signal, plan);
         iterative = fft_iterative(signal, plan);
         shared_recursive = fft_recursive(signal, shared_plan);
@@ -106,20 +106,4 @@ function test_fft8
     fprintf('PASS: 8-point FFT; tolerance %.1e; twiddle error %.3e\n', ...
             tolerance, twiddle_error);
     fprintf('MATLAB %s\n', version);
-end
-
-function spectrum = direct_dft(signal)
-% 按 DFT 定义直接求和，作为独立基准，不复用被测的表或蝶形。
-    point_count = numel(signal);
-    % 预分配复数输出；每个频点分别累加所有输入样本的贡献。
-    spectrum = complex(zeros(point_count, 1));
-    for frequency = 0:point_count - 1
-        for sample = 0:point_count - 1
-            % X[k] = sum_n x[n] exp(-j*2*pi*k*n/N)，数学下标从 0 起。
-            weight = exp(-2i * pi * frequency * sample / point_count);
-            % 仅访问 MATLAB 数组时加 1，公式中的 k、n 保持零起始。
-            spectrum(frequency + 1) = spectrum(frequency + 1) ...
-                + signal(sample + 1) * weight;
-        end
-    end
 end
