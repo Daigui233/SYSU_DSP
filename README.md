@@ -38,4 +38,4 @@ basic/、cma/、verilog/
 └── results/   最终测试数据、图表及复现说明
 ```
 
-当前仅确定项目约定，尚未开始算法开发。
+当前基础模块进度与运行方法见 [basic/README.md](basic/README.md)。
