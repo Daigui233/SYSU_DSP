@@ -52,6 +52,7 @@ xsim.dir/
 verilog/build/
 verilog/build_impl/
 verilog/build_impl2/
+verilog/build_*/
 verilog/.Xil/
 verilog/*.jou
 verilog/*.log
