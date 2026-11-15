@@ -48,3 +48,15 @@ xsim.dir/
 .ipcache/
 
 # Final data and figures in each module's results/ remain trackable.
+# Vivado generated project/build products
+verilog/build/
+verilog/build_impl/
+verilog/build_impl2/
+verilog/.Xil/
+verilog/*.jou
+verilog/*.log
+verilog/*.str
+verilog/results/*.jou
+verilog/results/*.log
+verilog/results/*.pb
+verilog/results/*.rpx
