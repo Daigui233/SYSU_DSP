@@ -1,14 +1,14 @@
 Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
-----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2019.1 (win64) Build 2552052 Fri May 24 14:49:42 MDT 2019
-| Date         : Sun Nov 15 13:14:03 2026
+| Date         : Sun Nov 15 23:11:36 2026
 | Host         : LAPTOP-L12NKMPD running 64-bit major release  (build 9200)
-| Command      : report_drc -file C:/Users/38528/Desktop/SYSU_DSP_verilog_work/verilog/results/fft32_impl_top_drc.rpt
+| Command      : report_drc -file E:/SYSU_DSP_work/SYSU_DSP_verilog_work/verilog/results/fft32_impl_top_drc.rpt
 | Design       : fft32_impl_top
 | Device       : xcvu13p-flga2577-2-i
 | Speed File   : -2
 | Design State : Fully Routed
-----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
 
 Report DRC
 
@@ -24,15 +24,17 @@ Table of Contents
       Design limits: <entire design considered>
            Ruledeck: default
              Max violations: <unlimited>
-             Violations found: 963
+             Violations found: 1035
 +-----------+------------------+---------------------------------------------------------------------+------------+
 | Rule      | Severity         | Description                                                         | Violations |
 +-----------+------------------+---------------------------------------------------------------------+------------+
 | NSTD-1    | Critical Warning | Unspecified I/O Standard                                            | 1          |
 | UCIO-1    | Critical Warning | Unconstrained Logical Port                                          | 1          |
+| DPIP-2    | Warning          | Input pipelining                                                    | 36         |
 | DPOP-3    | Warning          | PREG Output pipelining                                              | 320        |
 | RTSTAT-10 | Warning          | No routable loads                                                   | 1          |
 | AVAL-155  | Advisory         | enum_AMULTSEL_BMULTSEL_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND | 320        |
+| REQP-1669 | Advisory         | enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND                     | 36         |
 | REQP-1680 | Advisory         | enum_PREG_0_connects_CEP_GND                                        | 320        |
 +-----------+------------------+---------------------------------------------------------------------+------------+
 
@@ -46,6 +48,186 @@ Related violations: <none>
 UCIO-1#1 Critical Warning
 Unconstrained Logical Port  
 3 out of 3 logical ports have no user assigned specific location constraint (LOC). This may cause I/O contention or incompatibility with the board power or connectivity affecting performance, signal integrity or in extreme cases cause damage to the device or the components to which it is connected. To correct this violation, specify all pin locations. This design will fail to generate a bitstream unless all logical ports have a user specified site LOC constraint defined.  To allow bitstream creation with unspecified pin locations (not recommended), use this command: set_property SEVERITY {Warning} [get_drc_checks UCIO-1].  NOTE: When using the Vivado Runs infrastructure (e.g. launch_runs Tcl command), add this command to a .tcl file and add that file as a pre-hook for write_bitstream step for the implementation run.  Problem ports: clk, rst, status.
+Related violations: <none>
+
+DPIP-2#1 Warning
+Input pipelining  
+DSP core/u_s1_b0_0/u_ii/u_dsp48e2 input core/u_s1_b0_0/u_ii/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#2 Warning
+Input pipelining  
+DSP core/u_s1_b0_0/u_rr/u_dsp48e2 input core/u_s1_b0_0/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#3 Warning
+Input pipelining  
+DSP core/u_s1_b0_1/u_ir/u_dsp48e2 input core/u_s1_b0_1/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#4 Warning
+Input pipelining  
+DSP core/u_s2_b24_2/u_ir/u_dsp48e2 input core/u_s2_b24_2/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#5 Warning
+Input pipelining  
+DSP core/u_s3_b0_1/u_ri/u_dsp48e2 input core/u_s3_b0_1/u_ri/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#6 Warning
+Input pipelining  
+DSP core/u_s3_b0_1/u_rr/u_dsp48e2 input core/u_s3_b0_1/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#7 Warning
+Input pipelining  
+DSP core/u_s3_b0_7/u_ii/u_dsp48e2 input core/u_s3_b0_7/u_ii/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#8 Warning
+Input pipelining  
+DSP core/u_s3_b16_1/u_ir/u_dsp48e2 input core/u_s3_b16_1/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#9 Warning
+Input pipelining  
+DSP core/u_s3_b16_3/u_rr/u_dsp48e2 input core/u_s3_b16_3/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#10 Warning
+Input pipelining  
+DSP core/u_s3_b16_5/u_ri/u_dsp48e2 input core/u_s3_b16_5/u_ri/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#11 Warning
+Input pipelining  
+DSP core/u_s3_b16_5/u_rr/u_dsp48e2 input core/u_s3_b16_5/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#12 Warning
+Input pipelining  
+DSP core/u_s4_b0_0/u_ii/u_dsp48e2 input core/u_s4_b0_0/u_ii/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#13 Warning
+Input pipelining  
+DSP core/u_s4_b0_0/u_ri/u_dsp48e2 input core/u_s4_b0_0/u_ri/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#14 Warning
+Input pipelining  
+DSP core/u_s4_b0_0/u_rr/u_dsp48e2 input core/u_s4_b0_0/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#15 Warning
+Input pipelining  
+DSP core/u_s4_b0_10/u_ii/u_dsp48e2 input core/u_s4_b0_10/u_ii/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#16 Warning
+Input pipelining  
+DSP core/u_s4_b0_10/u_ri/u_dsp48e2 input core/u_s4_b0_10/u_ri/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#17 Warning
+Input pipelining  
+DSP core/u_s4_b0_10/u_rr/u_dsp48e2 input core/u_s4_b0_10/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#18 Warning
+Input pipelining  
+DSP core/u_s4_b0_12/u_ir/u_dsp48e2 input core/u_s4_b0_12/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#19 Warning
+Input pipelining  
+DSP core/u_s4_b0_12/u_ri/u_dsp48e2 input core/u_s4_b0_12/u_ri/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#20 Warning
+Input pipelining  
+DSP core/u_s4_b0_13/u_ii/u_dsp48e2 input core/u_s4_b0_13/u_ii/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#21 Warning
+Input pipelining  
+DSP core/u_s4_b0_13/u_ir/u_dsp48e2 input core/u_s4_b0_13/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#22 Warning
+Input pipelining  
+DSP core/u_s4_b0_13/u_ri/u_dsp48e2 input core/u_s4_b0_13/u_ri/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#23 Warning
+Input pipelining  
+DSP core/u_s4_b0_13/u_rr/u_dsp48e2 input core/u_s4_b0_13/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#24 Warning
+Input pipelining  
+DSP core/u_s4_b0_14/u_ir/u_dsp48e2 input core/u_s4_b0_14/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#25 Warning
+Input pipelining  
+DSP core/u_s4_b0_14/u_ri/u_dsp48e2 input core/u_s4_b0_14/u_ri/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#26 Warning
+Input pipelining  
+DSP core/u_s4_b0_14/u_rr/u_dsp48e2 input core/u_s4_b0_14/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#27 Warning
+Input pipelining  
+DSP core/u_s4_b0_2/u_ii/u_dsp48e2 input core/u_s4_b0_2/u_ii/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#28 Warning
+Input pipelining  
+DSP core/u_s4_b0_2/u_ir/u_dsp48e2 input core/u_s4_b0_2/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#29 Warning
+Input pipelining  
+DSP core/u_s4_b0_2/u_ri/u_dsp48e2 input core/u_s4_b0_2/u_ri/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#30 Warning
+Input pipelining  
+DSP core/u_s4_b0_2/u_rr/u_dsp48e2 input core/u_s4_b0_2/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#31 Warning
+Input pipelining  
+DSP core/u_s4_b0_4/u_rr/u_dsp48e2 input core/u_s4_b0_4/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#32 Warning
+Input pipelining  
+DSP core/u_s4_b0_5/u_ii/u_dsp48e2 input core/u_s4_b0_5/u_ii/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#33 Warning
+Input pipelining  
+DSP core/u_s4_b0_5/u_ir/u_dsp48e2 input core/u_s4_b0_5/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#34 Warning
+Input pipelining  
+DSP core/u_s4_b0_5/u_rr/u_dsp48e2 input core/u_s4_b0_5/u_rr/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#35 Warning
+Input pipelining  
+DSP core/u_s4_b0_6/u_ir/u_dsp48e2 input core/u_s4_b0_6/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#36 Warning
+Input pipelining  
+DSP core/u_s4_b0_8/u_ir/u_dsp48e2 input core/u_s4_b0_8/u_ir/u_dsp48e2/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPOP-3#1 Warning
@@ -1650,7 +1832,7 @@ Related violations: <none>
 
 RTSTAT-10#1 Warning
 No routable loads  
-510 net(s) have no routable loads. The problem bus(es) and/or net(s) are core/u_s4_b0_7/out_im[15:0], core/u_s4_b0_13/out_im[15:0], core/u_s4_b0_12/out_im[7:0], core/u_s4_b0_9/out_im[15:0], core/u_s4_b0_11/out_im[15:0], core/u_s4_b0_1/out_im[15:0], core/u_s4_b0_8/out_im[7:0], core/u_s4_b0_5/out_im[15:0], core/u_s4_b0_4/out_im[15:0], core/u_s4_b0_15/out_im[15:0], core/u_s4_b0_3/out_im[15:0], core/out_im[1], core/out_im[2], core/out_im[3], core/out_im[4] (the first 15 of 219 listed).
+510 net(s) have no routable loads. The problem bus(es) and/or net(s) are core/u_s4_b0_3/out_im[15:0], core/u_s4_b0_9/out_im[15:0], core/u_s4_b0_4/out_im[15:0], core/u_s4_b0_5/out_im[15:0], core/u_s4_b0_13/out_im[15:0], core/u_s4_b0_12/out_im[7:0], core/u_s4_b0_8/out_im[7:0], core/u_s4_b0_1/out_im[15:0], core/u_s4_b0_11/out_im[15:0], core/u_s4_b0_15/out_im[15:0], core/u_s4_b0_7/out_im[15:0], core/out_im[1], core/out_im[2], core/out_im[3], core/out_im[4] (the first 15 of 219 listed).
 Related violations: <none>
 
 AVAL-155#1 Advisory
@@ -3251,6 +3433,186 @@ Related violations: <none>
 AVAL-155#320 Advisory
 enum_AMULTSEL_BMULTSEL_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
 core/u_s4_b0_9/u_rr/u_dsp48e2: DSP48E2 is not using the D port (AMULTSEL = A and BMULTSEL = B). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+Related violations: <none>
+
+REQP-1669#1 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s1_b0_0/u_ii/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#2 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s1_b0_0/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#3 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s1_b0_1/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#4 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s2_b24_2/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#5 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s3_b0_1/u_ri/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#6 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s3_b0_1/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#7 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s3_b0_7/u_ii/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#8 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s3_b16_1/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#9 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s3_b16_3/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#10 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s3_b16_5/u_ri/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#11 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s3_b16_5/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#12 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_0/u_ii/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#13 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_0/u_ri/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#14 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_0/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#15 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_10/u_ii/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#16 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_10/u_ri/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#17 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_10/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#18 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_12/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#19 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_12/u_ri/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#20 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_13/u_ii/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#21 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_13/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#22 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_13/u_ri/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#23 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_13/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#24 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_14/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#25 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_14/u_ri/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#26 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_14/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#27 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_2/u_ii/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#28 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_2/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#29 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_2/u_ri/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#30 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_2/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#31 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_4/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#32 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_5/u_ii/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#33 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_5/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#34 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_5/u_rr/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#35 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_6/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
+Related violations: <none>
+
+REQP-1669#36 Advisory
+enum_AREG_0_connects_CEA1_GND_connects_CEA2_GND  
+core/u_s4_b0_8/u_ir/u_dsp48e2: When DSP48E2 attribute AREG is set to 0, the CEA1 and CEA2 pins should be tied to GND to save power.
 Related violations: <none>
 
 REQP-1680#1 Advisory

@@ -24,12 +24,12 @@ function [out_re, out_im] = fft_fixed_reference(in_re, in_im)
                 wr = round(32767*cos(theta));
                 wi = round(32767*sin(theta));
                 pr = bitshift(out_re(i1)*wr - out_im(i1)*wi, -15);
-                pi = bitshift(out_re(i1)*wi + out_im(i1)*wr, -15);
+                prod_im = bitshift(out_re(i1)*wi + out_im(i1)*wr, -15);
                 ar = out_re(i0); ai = out_im(i0);
                 out_re(i0) = bitshift(ar+pr, -1);
-                out_im(i0) = bitshift(ai+pi, -1);
+                out_im(i0) = bitshift(ai+prod_im, -1);
                 out_re(i1) = bitshift(ar-pr, -1);
-                out_im(i1) = bitshift(ai-pi, -1);
+                out_im(i1) = bitshift(ai-prod_im, -1);
             end
         end
     end

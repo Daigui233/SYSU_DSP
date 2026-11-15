@@ -81,9 +81,13 @@ module complex_butterfly_pipe #(
     wire signed [DATA_W-1:0] mult_re_q15;
     wire signed [DATA_W-1:0] mult_im_q15;
 
-    reg signed [DATA_W-1:0] a_re_d0, a_re_d1, a_re_d2;
-    reg signed [DATA_W-1:0] a_im_d0, a_im_d1, a_im_d2;
-    reg [2:0] valid_d;
+    // DSP48E2 uses one A/B input register and one multiplier register
+    // (PREG is disabled), so the multiplier result is aligned after two
+    // clock edges.  The bypass A path and valid marker must use the same
+    // two-edge delay for back-to-back frames.
+    reg signed [DATA_W-1:0] a_re_d0, a_re_d1;
+    reg signed [DATA_W-1:0] a_im_d0, a_im_d1;
+    reg [1:0] valid_d;
 
     wire signed [DATA_W:0] sum_re;
     wire signed [DATA_W:0] sum_im;
@@ -108,34 +112,30 @@ module complex_butterfly_pipe #(
     assign mult_re_q15 = mult_re_full >>> Q_SHIFT;
     assign mult_im_q15 = mult_im_full >>> Q_SHIFT;
 
-    assign sum_re = $signed(a_re_d2) + $signed(mult_re_q15);
-    assign sum_im = $signed(a_im_d2) + $signed(mult_im_q15);
-    assign dif_re = $signed(a_re_d2) - $signed(mult_re_q15);
-    assign dif_im = $signed(a_im_d2) - $signed(mult_im_q15);
+    assign sum_re = $signed(a_re_d1) + $signed(mult_re_q15);
+    assign sum_im = $signed(a_im_d1) + $signed(mult_im_q15);
+    assign dif_re = $signed(a_re_d1) - $signed(mult_re_q15);
+    assign dif_im = $signed(a_im_d1) - $signed(mult_im_q15);
 
     assign y0_re = sum_re >>> 1;
     assign y0_im = sum_im >>> 1;
     assign y1_re = dif_re >>> 1;
     assign y1_im = dif_im >>> 1;
-    assign valid_o = valid_d[2];
+    assign valid_o = valid_d[1];
 
     always @(posedge clk) begin
         if (rst) begin
             a_re_d0 <= '0;
             a_re_d1 <= '0;
-            a_re_d2 <= '0;
             a_im_d0 <= '0;
             a_im_d1 <= '0;
-            a_im_d2 <= '0;
-            valid_d <= 3'b000;
+            valid_d <= 2'b00;
         end else begin
             a_re_d0 <= a_re;
             a_re_d1 <= a_re_d0;
-            a_re_d2 <= a_re_d1;
             a_im_d0 <= a_im;
             a_im_d1 <= a_im_d0;
-            a_im_d2 <= a_im_d1;
-            valid_d <= {valid_d[1:0], valid_i};
+            valid_d <= {valid_d[0], valid_i};
         end
     end
 endmodule

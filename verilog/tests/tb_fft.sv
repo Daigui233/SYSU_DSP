@@ -53,7 +53,10 @@ module tb_fft;
 
     initial begin
         errors = 0; in32_re = '0; in32_im = '0; in64_re = '0; in64_im = '0;
-        repeat (5) @(posedge clk);
+        // Vivado's glbl model holds GSR active for the first 100 ns.
+        // Keep the explicit reset asserted beyond that interval so DSP48E2
+        // registers are initialized before the first frame is accepted.
+        repeat (30) @(posedge clk);
         rst = 1'b0;
         for (i = 0; i < VECTOR_COUNT; i = i + 1) begin
             send32(i);
