@@ -17,7 +17,8 @@ foreach top {fft32_impl_top fft64_impl_top} {
     wait_on_run impl_1
     open_run impl_1
     report_utilization -file [file join $result_dir ${top}_utilization.rpt]
-    report_timing_summary -delay_type max -max_paths 20 -warn_on_violation -file [file join $result_dir ${top}_timing.rpt]
+    report_timing_summary -delay_type min_max -max_paths 20 -warn_on_violation -file [file join $result_dir ${top}_timing.rpt]
+    check_timing -verbose -file [file join $result_dir ${top}_check_timing.rpt]
     report_drc -file [file join $result_dir ${top}_drc.rpt]
     close_project
 }

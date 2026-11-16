@@ -71,7 +71,29 @@ module fft32_impl_top (
         .out_valid(core_valid), .out_re(core_re), .out_im(core_im)
     );
 
-    assign status = core_valid ^ core_re[0] ^ core_im[0];
+    // Capture every FFT output bit at the valid boundary. This makes the
+    // implementation wrapper a real synchronous sink for the full frame,
+    // while status is a registered reduction checksum for observability.
+    (* DONT_TOUCH = "TRUE" *) reg signed [255:0] captured_re;
+    (* DONT_TOUCH = "TRUE" *) reg signed [255:0] captured_im;
+    (* DONT_TOUCH = "TRUE" *) reg captured_valid;
+    reg status_reg;
+    always @(posedge clk) begin
+        if (rst) begin
+            captured_re <= '0;
+            captured_im <= '0;
+            captured_valid <= 1'b0;
+            status_reg <= 1'b0;
+        end else begin
+            captured_valid <= core_valid;
+            if (core_valid) begin
+                captured_re <= core_re;
+                captured_im <= core_im;
+            end
+            status_reg <= captured_valid ^ (^captured_re) ^ (^captured_im);
+        end
+    end
+    assign status = status_reg;
 endmodule
 
 module fft64_impl_top (
@@ -173,5 +195,27 @@ module fft64_impl_top (
         .out_valid(core_valid), .out_re(core_re), .out_im(core_im)
     );
 
-    assign status = core_valid ^ core_re[0] ^ core_im[0];
+    // Capture every FFT output bit at the valid boundary. This makes the
+    // implementation wrapper a real synchronous sink for the full frame,
+    // while status is a registered reduction checksum for observability.
+    (* DONT_TOUCH = "TRUE" *) reg signed [511:0] captured_re;
+    (* DONT_TOUCH = "TRUE" *) reg signed [511:0] captured_im;
+    (* DONT_TOUCH = "TRUE" *) reg captured_valid;
+    reg status_reg;
+    always @(posedge clk) begin
+        if (rst) begin
+            captured_re <= '0;
+            captured_im <= '0;
+            captured_valid <= 1'b0;
+            status_reg <= 1'b0;
+        end else begin
+            captured_valid <= core_valid;
+            if (core_valid) begin
+                captured_re <= core_re;
+                captured_im <= core_im;
+            end
+            status_reg <= captured_valid ^ (^captured_re) ^ (^captured_im);
+        end
+    end
+    assign status = status_reg;
 endmodule
