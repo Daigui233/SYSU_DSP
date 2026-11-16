@@ -11,8 +11,11 @@ module tb_fft;
     wire valid32_o, valid64_o;
     wire signed [255:0] out32_re, out32_im;
     wire signed [511:0] out64_re, out64_im;
+    localparam integer FFT32_LATENCY = 5 * 3 + 1;
+    localparam integer FFT64_LATENCY = 6 * 3 + 1;
     integer i;
     integer errors;
+    integer wait_cycles;
 
     fft32_parallel dut32 (
         .clk(clk), .rst(rst), .in_valid(valid32), .in_re(in32_re), .in_im(in32_im),
@@ -28,7 +31,14 @@ module tb_fft;
             @(negedge clk);
             in32_re = FFT32_IN_RE[index]; in32_im = FFT32_IN_IM[index]; valid32 = 1'b1;
             @(negedge clk); valid32 = 1'b0;
-            wait (valid32_o === 1'b1); #1;
+            wait_cycles = 0;
+            while (valid32_o !== 1'b1 && wait_cycles < FFT32_LATENCY + 8) begin
+                @(posedge clk);
+                wait_cycles = wait_cycles + 1;
+            end
+            if (valid32_o !== 1'b1)
+                $fatal(1, "FFT32 timeout waiting for output of vector %0d (expected latency %0d cycles)", index, FFT32_LATENCY);
+            #1;
             if (out32_re !== FFT32_OUT_RE[index] || out32_im !== FFT32_OUT_IM[index]) begin
                 $display("FFT32 mismatch vector %0d: got re=%h im=%h expected re=%h im=%h", index, out32_re, out32_im, FFT32_OUT_RE[index], FFT32_OUT_IM[index]);
                 errors = errors + 1;
@@ -42,7 +52,14 @@ module tb_fft;
             @(negedge clk);
             in64_re = FFT64_IN_RE[index]; in64_im = FFT64_IN_IM[index]; valid64 = 1'b1;
             @(negedge clk); valid64 = 1'b0;
-            wait (valid64_o === 1'b1); #1;
+            wait_cycles = 0;
+            while (valid64_o !== 1'b1 && wait_cycles < FFT64_LATENCY + 8) begin
+                @(posedge clk);
+                wait_cycles = wait_cycles + 1;
+            end
+            if (valid64_o !== 1'b1)
+                $fatal(1, "FFT64 timeout waiting for output of vector %0d (expected latency %0d cycles)", index, FFT64_LATENCY);
+            #1;
             if (out64_re !== FFT64_OUT_RE[index] || out64_im !== FFT64_OUT_IM[index]) begin
                 $display("FFT64 mismatch vector %0d: got re=%h im=%h expected re=%h im=%h", index, out64_re, out64_im, FFT64_OUT_RE[index], FFT64_OUT_IM[index]);
                 errors = errors + 1;
@@ -63,7 +80,7 @@ module tb_fft;
             send64(i);
         end
         if (errors == 0) $display("ALL FFT TESTS PASS");
-        else $display("FFT TESTS FAILED: %0d errors", errors);
+        else $fatal(1, "FFT TESTS FAILED: %0d errors", errors);
         $finish;
     end
 endmodule

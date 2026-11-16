@@ -11,6 +11,8 @@ module tb_fft_cont;
     wire valid32_o, valid64_o;
     wire signed [255:0] out32_re, out32_im;
     wire signed [511:0] out64_re, out64_im;
+    localparam integer FFT32_LATENCY = 5 * 3 + 1;
+    localparam integer FFT64_LATENCY = 6 * 3 + 1;
     integer cycle, idx32, idx64, errors;
 
     fft32_parallel dut32 (.clk(clk), .rst(rst), .in_valid(valid32),
@@ -55,8 +57,8 @@ module tb_fft_cont;
             $display("CONT valid count mismatch: 32=%0d 64=%0d", idx32, idx64);
             errors=errors+1;
         end
-        if (errors == 0) $display("CONTIGUOUS FRAME TEST PASS");
-        else $display("CONTIGUOUS FRAME TEST FAILED: %0d errors", errors);
+        if (errors == 0) $display("CONTIGUOUS FRAME TEST PASS (latencies %0d/%0d cycles)", FFT32_LATENCY, FFT64_LATENCY);
+        else $fatal(1, "CONTIGUOUS FRAME TEST FAILED: %0d errors", errors);
         $finish;
     end
 endmodule
