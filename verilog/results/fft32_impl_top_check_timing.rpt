@@ -1,14 +1,14 @@
 Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 | Tool Version      : Vivado v.2019.1 (win64) Build 2552052 Fri May 24 14:49:42 MDT 2019
-| Date              : Mon Nov 16 13:24:43 2026
+| Date              : Sun Nov 22 20:53:35 2026
 | Host              : LAPTOP-L12NKMPD running 64-bit major release  (build 9200)
-| Command           : check_timing -verbose -file E:/SYSU_DSP_work/SYSU_DSP_verilog_work/verilog/results/fft32_impl_top_check_timing.rpt
+| Command           : check_timing -verbose -file E:/SYSU_DSP_work/fft_review/verilog/results/fft32_impl_top_check_timing.rpt
 | Design            : fft32_impl_top
 | Device            : xcvu13p-flga2577
 | Speed File        : -2  PRODUCTION 1.23 03-18-2019
 | Temperature Grade : I
------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 
 
 check_timing report
