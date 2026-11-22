@@ -73,12 +73,6 @@ module complex_butterfly_pipe #(
     localparam signed [16:0] TW_RE_S = TW_RE;
     localparam signed [16:0] TW_IM_S = TW_IM;
 
-    wire signed [47:0] p_rr;
-    wire signed [47:0] p_ii;
-    wire signed [47:0] p_ri;
-    wire signed [47:0] p_ir;
-    wire signed [47:0] mult_re_full;
-    wire signed [47:0] mult_im_full;
     wire signed [DATA_W-1:0] mult_re_q15;
     wire signed [DATA_W-1:0] mult_im_q15;
 
@@ -95,23 +89,55 @@ module complex_butterfly_pipe #(
     wire signed [DATA_W:0] dif_re;
     wire signed [DATA_W:0] dif_im;
 
-    dsp48_mult3 #(.A_W(DATA_W), .B_W(17)) u_rr (
-        .clk(clk), .rst(rst), .a(b_re), .b(TW_RE_S), .p(p_rr)
-    );
-    dsp48_mult3 #(.A_W(DATA_W), .B_W(17)) u_ii (
-        .clk(clk), .rst(rst), .a(b_im), .b(TW_IM_S), .p(p_ii)
-    );
-    dsp48_mult3 #(.A_W(DATA_W), .B_W(17)) u_ri (
-        .clk(clk), .rst(rst), .a(b_re), .b(TW_IM_S), .p(p_ri)
-    );
-    dsp48_mult3 #(.A_W(DATA_W), .B_W(17)) u_ir (
-        .clk(clk), .rst(rst), .a(b_im), .b(TW_RE_S), .p(p_ir)
-    );
+    generate
+        if (((TW_RE == 32768 || TW_RE == -32768) && TW_IM == 0) ||
+            ((TW_IM == 32768 || TW_IM == -32768) && TW_RE == 0)) begin : gen_unit
+            // Q15 scaling cancels exactly. Put any negation between registers
+            // and preserve the same DATA_W narrowing as the DSP result.
+            reg signed [DATA_W-1:0] re_d0, im_d0, re_d1, im_d1, re_d2, im_d2;
+            always @(posedge clk) begin
+                if (rst) begin
+                    re_d0 <= '0; im_d0 <= '0;
+                    re_d1 <= '0; im_d1 <= '0;
+                    re_d2 <= '0; im_d2 <= '0;
+                end else begin
+                    re_d0 <= (TW_RE == 0) ? b_im : b_re;
+                    im_d0 <= (TW_RE == 0) ? b_re : b_im;
+                    re_d1 <= (TW_RE < 0 || TW_IM > 0) ? -re_d0 : re_d0;
+                    im_d1 <= (TW_RE < 0 || TW_IM < 0) ? -im_d0 : im_d0;
+                    re_d2 <= re_d1;
+                    im_d2 <= im_d1;
+                end
+            end
+            assign mult_re_q15 = re_d2;
+            assign mult_im_q15 = im_d2;
+        end else begin : gen_dsp
+            wire signed [47:0] p_rr;
+            wire signed [47:0] p_ii;
+            wire signed [47:0] p_ri;
+            wire signed [47:0] p_ir;
+            wire signed [47:0] mult_re_full;
+            wire signed [47:0] mult_im_full;
 
-    assign mult_re_full = $signed(p_rr) - $signed(p_ii);
-    assign mult_im_full = $signed(p_ri) + $signed(p_ir);
-    assign mult_re_q15 = mult_re_full >>> Q_SHIFT;
-    assign mult_im_q15 = mult_im_full >>> Q_SHIFT;
+            dsp48_mult3 #(.A_W(DATA_W), .B_W(17)) u_rr (
+                .clk(clk), .rst(rst), .a(b_re), .b(TW_RE_S), .p(p_rr)
+            );
+            dsp48_mult3 #(.A_W(DATA_W), .B_W(17)) u_ii (
+                .clk(clk), .rst(rst), .a(b_im), .b(TW_IM_S), .p(p_ii)
+            );
+            dsp48_mult3 #(.A_W(DATA_W), .B_W(17)) u_ri (
+                .clk(clk), .rst(rst), .a(b_re), .b(TW_IM_S), .p(p_ri)
+            );
+            dsp48_mult3 #(.A_W(DATA_W), .B_W(17)) u_ir (
+                .clk(clk), .rst(rst), .a(b_im), .b(TW_RE_S), .p(p_ir)
+            );
+
+            assign mult_re_full = $signed(p_rr) - $signed(p_ii);
+            assign mult_im_full = $signed(p_ri) + $signed(p_ir);
+            assign mult_re_q15 = mult_re_full >>> Q_SHIFT;
+            assign mult_im_q15 = mult_im_full >>> Q_SHIFT;
+        end
+    endgenerate
 
     assign sum_re = $signed(a_re_d2) + $signed(mult_re_q15);
     assign sum_im = $signed(a_im_d2) + $signed(mult_im_q15);
