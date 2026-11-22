@@ -7,13 +7,11 @@ create_project -force sysu_dsp_fft_cont [file join $build_dir project] -part xcv
 add_files [file join $verilog_dir src fft_parallel.sv]
 add_files -fileset sim_1 [list \
     [file join $verilog_dir tests tb_fft_cont.sv] \
-    [file join $verilog_dir tests vectors.svh]]
+    [file join $verilog_dir tests stream_vectors.svh]]
 set_property file_type SystemVerilog [get_files [file join $verilog_dir src fft_parallel.sv]]
 set_property file_type SystemVerilog [get_files [file join $verilog_dir tests tb_fft_cont.sv]]
 set_property top tb_fft_cont [get_filesets sim_1]
 set_property top fft32_parallel [get_filesets sources_1]
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1
-launch_simulation -simset sim_1 -mode behavioral
-close_sim -force
-close_project
+source [file join $script_dir finish_sim.tcl]

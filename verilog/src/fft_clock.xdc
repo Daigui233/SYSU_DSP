@@ -2,9 +2,8 @@
 create_clock -name clk -period 4.000 [get_ports clk]
 set_clock_uncertainty 0.100 [get_clocks clk]
 
-# The implementation tops are synchronous analysis wrappers. Reset is an
-# asynchronous control input and is excluded from data-path timing; explicit
-# zero input/output delays document the virtual interface assumptions.
+# RTL samples reset synchronously. External rst/status paths are excluded
+# for this virtual wrapper. check_timing does not validate those interfaces.
 set_input_delay -clock clk -min 0.000 [get_ports rst]
 set_input_delay -clock clk -max 0.000 [get_ports rst]
 set_false_path -from [get_ports rst]
