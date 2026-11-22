@@ -1,6 +1,8 @@
 `timescale 1ns/1ps
 module tb_fft;
     `include "vectors.svh"
+    reg passed = 0;
+    initial #10000 $fatal(1, "Testbench watchdog expired");
     reg clk = 1'b0;
     always #2 clk = ~clk; // 250 MHz
     reg rst = 1'b1;
@@ -73,7 +75,7 @@ module tb_fft;
         // Vivado's glbl model holds GSR active for the first 100 ns.
         // Keep the explicit reset asserted beyond that interval so DSP48E2
         // registers are initialized before the first frame is accepted.
-        repeat (30) @(posedge clk);
+        repeat (30) @(negedge clk);
         rst = 1'b0;
         for (i = 0; i < VECTOR_COUNT; i = i + 1) begin
             send32(i);
@@ -81,6 +83,7 @@ module tb_fft;
         end
         if (errors == 0) $display("ALL FFT TESTS PASS");
         else $fatal(1, "FFT TESTS FAILED: %0d errors", errors);
+        passed = 1;
         $finish;
     end
 endmodule

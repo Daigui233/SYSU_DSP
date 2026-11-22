@@ -3,6 +3,8 @@
 // truncation and +/-1 twiddle coefficient errors that ordinary random frames
 // can miss.
 module tb_fft_precision;
+    reg passed = 0;
+    initial #10000 $fatal(1, "Testbench watchdog expired");
     reg clk = 1'b0;
     always #2 clk = ~clk;
     reg rst = 1'b1;
@@ -75,7 +77,7 @@ module tb_fft_precision;
 
     initial begin
         errors = 0; in32_re = '0; in32_im = '0; in64_re = '0; in64_im = '0;
-        repeat (30) @(posedge clk);
+        repeat (30) @(negedge clk);
         rst = 1'b0;
         for (value = -128; value <= 127; value = value + 1) begin
             if (value == -128 || value == -8 || value == 1 || value == 8 || value == 127) begin
@@ -85,6 +87,7 @@ module tb_fft_precision;
         end
         if (errors == 0) $display("FIXED-POINT PRECISION TEST PASS");
         else $fatal(1, "FIXED-POINT PRECISION TEST FAILED: %0d errors", errors);
+        passed = 1;
         $finish;
     end
 endmodule

@@ -11,6 +11,4 @@ set_property top tb_fft_precision [get_filesets sim_1]
 set_property top fft32_parallel [get_filesets sources_1]
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1
-launch_simulation -simset sim_1 -mode behavioral
-close_sim -force
-close_project
+source [file join $script_dir finish_sim.tcl]

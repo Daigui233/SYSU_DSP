@@ -1,6 +1,8 @@
 `timescale 1ns/1ps
 module tb_fft_cont;
-    `include "vectors.svh"
+    `include "stream_vectors.svh"
+    reg passed = 0;
+    initial #10000 $fatal(1, "Testbench watchdog expired");
     reg clk = 1'b0;
     always #2 clk = ~clk;
     reg rst = 1'b1;
@@ -13,7 +15,11 @@ module tb_fft_cont;
     wire signed [511:0] out64_re, out64_im;
     localparam integer FFT32_LATENCY = 5 * 3 + 1;
     localparam integer FFT64_LATENCY = 6 * 3 + 1;
-    integer cycle, idx32, idx64, errors;
+    integer cycle, i, frame32, frame64, count32, count64;
+    // A negative ID represents a bubble. Slot zero is the capture edge.
+    integer expected32 [0:FFT32_LATENCY-1];
+    integer expected64 [0:FFT64_LATENCY-1];
+    reg [31:0] random_state = 32'h7214d024;
 
     fft32_parallel dut32 (.clk(clk), .rst(rst), .in_valid(valid32),
         .in_re(in32_re), .in_im(in32_im), .out_valid(valid32_o),
@@ -23,42 +29,49 @@ module tb_fft_cont;
         .out_re(out64_re), .out_im(out64_im));
 
     initial begin
-        in32_re='0; in32_im='0; in64_re='0; in64_im='0;
-        idx32=0; idx64=0; errors=0;
-        // Wait beyond Vivado glbl's 100 ns GSR interval.
+        count32 = 0; count64 = 0;
         repeat (30) @(posedge clk);
-        rst=1'b0;
-        // Four different frames are accepted on four consecutive cycles.
-        for (cycle=0; cycle<45; cycle=cycle+1) begin
+        for (cycle = 0; cycle < 400; cycle = cycle + 1) begin
             @(negedge clk);
-            if (cycle < VECTOR_COUNT) begin
-                in32_re=FFT32_IN_RE[cycle]; in32_im=FFT32_IN_IM[cycle]; valid32=1'b1;
-                in64_re=FFT64_IN_RE[cycle]; in64_im=FFT64_IN_IM[cycle]; valid64=1'b1;
-            end else begin
-                valid32=1'b0; valid64=1'b0;
+            random_state = {random_state[30:0], ^(random_state & 32'h80200003)};
+            frame32 = (cycle + random_state[7:0]) % STREAM_COUNT;
+            frame64 = (cycle + random_state[15:8]) % STREAM_COUNT;
+            if (cycle >= 208 && cycle < 208 + STREAM_COUNT) begin
+                frame32 = cycle - 208;
+                frame64 = cycle - 208;
             end
-            @(posedge clk); #1;
-            if (valid32_o) begin
-                if (idx32 >= VECTOR_COUNT || out32_re !== FFT32_OUT_RE[idx32] || out32_im !== FFT32_OUT_IM[idx32]) begin
-                    $display("CONT FFT32 mismatch frame %0d: got %h/%h", idx32, out32_re, out32_im);
-                    errors=errors+1;
-                end
-                idx32=idx32+1;
+            rst = cycle == 0 || cycle == 44 || cycle == 207;
+            valid32 = cycle < 375 && (cycle < 65 || (cycle >= 208 && cycle < 208 + STREAM_COUNT) || random_state[0]);
+            valid64 = cycle < 375 && (cycle < 65 || (cycle >= 208 && cycle < 208 + STREAM_COUNT) || random_state[1]);
+            in32_re = F32_IN_RE[frame32]; in32_im = F32_IN_IM[frame32];
+            in64_re = F64_IN_RE[frame64]; in64_im = F64_IN_IM[frame64];
+            @(posedge clk);
+            for (i = FFT32_LATENCY-1; i > 0; i = i - 1)
+                expected32[i] = rst ? -1 : expected32[i-1];
+            expected32[0] = !rst && valid32 ? frame32 : -1;
+            for (i = FFT64_LATENCY-1; i > 0; i = i - 1)
+                expected64[i] = rst ? -1 : expected64[i-1];
+            expected64[0] = !rst && valid64 ? frame64 : -1;
+            #1; // Sample after nonblocking updates.
+            frame32 = expected32[FFT32_LATENCY-1];
+            if (valid32_o !== (frame32 >= 0))
+                $fatal(1, "FFT32 cycle %0d expected frame %0d valid=%b", cycle, frame32, valid32_o);
+            if (frame32 >= 0) begin
+                if (out32_re !== F32_OUT_RE[frame32] || out32_im !== F32_OUT_IM[frame32])
+                    $fatal(1, "FFT32 cycle %0d frame %0d data mismatch", cycle, frame32);
+                count32 = count32 + 1;
             end
-            if (valid64_o) begin
-                if (idx64 >= VECTOR_COUNT || out64_re !== FFT64_OUT_RE[idx64] || out64_im !== FFT64_OUT_IM[idx64]) begin
-                    $display("CONT FFT64 mismatch frame %0d: got %h/%h", idx64, out64_re, out64_im);
-                    errors=errors+1;
-                end
-                idx64=idx64+1;
+            frame64 = expected64[FFT64_LATENCY-1];
+            if (valid64_o !== (frame64 >= 0))
+                $fatal(1, "FFT64 cycle %0d expected frame %0d valid=%b", cycle, frame64, valid64_o);
+            if (frame64 >= 0) begin
+                if (out64_re !== F64_OUT_RE[frame64] || out64_im !== F64_OUT_IM[frame64])
+                    $fatal(1, "FFT64 cycle %0d frame %0d data mismatch", cycle, frame64);
+                count64 = count64 + 1;
             end
         end
-        if (idx32 != VECTOR_COUNT || idx64 != VECTOR_COUNT) begin
-            $display("CONT valid count mismatch: 32=%0d 64=%0d", idx32, idx64);
-            errors=errors+1;
-        end
-        if (errors == 0) $display("CONTIGUOUS FRAME TEST PASS (latencies %0d/%0d cycles)", FFT32_LATENCY, FFT64_LATENCY);
-        else $fatal(1, "CONTIGUOUS FRAME TEST FAILED: %0d errors", errors);
+        $display("STREAM PASS FFT32=%0d FFT64=%0d", count32, count64);
+        passed = 1;
         $finish;
     end
 endmodule
